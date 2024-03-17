@@ -12,13 +12,14 @@ def create_lkas11(packer, frame, car_fingerprint, send_lfa_mfa, apply_steer, ste
                   left_lane_depart, right_lane_depart):
   values = lkas11
   values["CF_Lkas_LdwsSysState"] = sys_state
-  values["CF_Lkas_SysWarning"] = 0 # ajouatom: 계기판에 안나오게함..   #3 if sys_warning else 0
+  values["CF_Lkas_SysWarning"] = 3 if sys_warning else 0
   values["CF_Lkas_LdwsLHWarning"] = left_lane_depart
   values["CF_Lkas_LdwsRHWarning"] = right_lane_depart
   values["CR_Lkas_StrToqReq"] = apply_steer
-  values["CF_Lkas_ActToi"] = steer_req
-  values["CF_Lkas_ToiFlt"] = torque_fault  # seems to allow actuation on CR_Lkas_StrToqReq
-  values["CF_Lkas_MsgCount"] = frame % 0x10
+  values["CF_Lkas_ActToi"] = steer_req and not cut_steer_temp
+  values["CF_Lkas_ToiFlt"] = cut_steer_temp  # seems to allow actuation on CR_Lkas_StrToqReq
+  values["CF_Lkas_MsgCount"] = cnt
+  values["CF_Lkas_Chksum"] = 0
 
   if send_lfa_mfa:
   #if car_fingerprint in (CAR.SONATA, CAR.PALISADE, CAR.KIA_NIRO_EV, CAR.KIA_NIRO_HEV_2021, CAR.SANTA_FE,
